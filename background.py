@@ -15,4 +15,4 @@ class Background:
 
     def draw(self):
         self.image.clip_draw(0, 0, self.image.w, self.image.h, screen_width // 2, screen_height // 2,
-                             screen_width.screen_height)
+                             screen_width, screen_height)
