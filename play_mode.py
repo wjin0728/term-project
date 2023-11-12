@@ -6,6 +6,7 @@ import random
 
 from background import Background
 from ground import Ground
+from player import Player
 
 def handle_events():
     events = get_events()
@@ -19,6 +20,7 @@ def handle_events():
 def init():
     game_world.add_object(Background('1'))
     game_world.add_object(Ground('1'), 1)
+    game_world.add_object(Player(), 2)
     pass
 
 
