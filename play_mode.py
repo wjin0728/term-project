@@ -1,5 +1,7 @@
 from pico2d import *
 import game_framework
+import menu_mode
+import game_world
 import random
 
 
@@ -9,7 +11,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.change_mode(menu_mode)
 
 
 def init():
