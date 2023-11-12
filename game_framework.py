@@ -32,6 +32,11 @@ def pop_mode():
         stack[-1].resume()
 
 
+def quit():
+    global running
+    running = False
+
+
 def run(start_mode):
     global running, stack
     running = True
