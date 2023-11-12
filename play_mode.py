@@ -4,6 +4,8 @@ import menu_mode
 import game_world
 import random
 
+from background import Background
+
 
 def handle_events():
     events = get_events()
@@ -15,20 +17,23 @@ def handle_events():
 
 
 def init():
-
+    game_world.add_object(Background('1'))
     pass
 
 
 def finish():
+    game_world.clear()
     pass
 
 
 def update():
+    game_world.update()
     pass
 
 
 def draw():
     clear_canvas()
+    game_world.render()
     update_canvas()
 
 
