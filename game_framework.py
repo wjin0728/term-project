@@ -11,6 +11,14 @@ def change_mode(mode):
     mode.init()
 
 
+def push_mode(mode):
+    global stack
+    if (len(stack) > 0):
+        stack[-1].pause()
+    stack.append(mode)
+    mode.init()
+
+
 def run(start_mode):
     global running, stack
     running = True
