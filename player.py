@@ -3,6 +3,12 @@ import game_framework
 from pico2d import *
 
 
+# Player Action Speed
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
+
+
 class Player:
     def __init__(self):
         self.x, self.y = 50, 90
