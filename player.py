@@ -45,6 +45,33 @@ class Idle:
 
 
 
+class Run:
+
+    @staticmethod
+    def enter(player, e):
+        if right_down(e) or left_up(e): # 오른쪽으로 RUN
+            player.dir, player.action, player.face_dir = 1, 1, 1
+        elif left_down(e) or right_up(e): # 왼쪽으로 RUN
+            player.dir, player.action, player.face_dir = -1, 0, -1
+
+    @staticmethod
+    def exit(player, e):
+
+        pass
+
+    @staticmethod
+    def do(player):
+        # player.frame = (player.frame + 1) % 8
+        player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
+        player.x = clamp(25, player.x, 1600-25)
+        player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+
+    @staticmethod
+    def draw(player):
+        player.image.clip_draw(int(player.frame) * 100, player.action * 100, 100, 100, player.x, player.y)
+
+
 class StateMachine:
     def __init__(self, player):
         self.player = player
