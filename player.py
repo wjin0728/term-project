@@ -19,30 +19,56 @@ def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 
+class Idle:
+
+    @staticmethod
+    def enter(player, e):
+        if player.face_dir == -1:
+            player.action = 2
+        elif player.face_dir == 1:
+            player.action = 3
+        player.dir = 0
+        player.frame = 0
+        pass
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+    @staticmethod
+    def draw(player):
+        player.image.clip_draw(int(player.frame) * 100, player.action * 100, 100, 100, player.x, player.y)
+
+
+
 class StateMachine:
-    def __init__(self, boy):
-        self.boy = boy
+    def __init__(self, player):
+        self.player = player
         self.cur_state
         self.transitions = {}
 
     def start(self):
-        self.cur_state.enter(self.boy, ('NONE', 0))
+        self.cur_state.enter(self.player, ('NONE', 0))
 
     def update(self):
-        self.cur_state.do(self.boy)
+        self.cur_state.do(self.player)
 
     def handle_event(self, e):
         for check_event, next_state in self.transitions[self.cur_state].items():
             if check_event(e):
-                self.cur_state.exit(self.boy, e)
+                self.cur_state.exit(self.player, e)
                 self.cur_state = next_state
-                self.cur_state.enter(self.boy, e)
+                self.cur_state.enter(self.player, e)
                 return True
 
         return False
 
     def draw(self):
-        self.cur_state.draw(self.boy)
+        self.cur_state.draw(self.player)
 
 
 # Player Action Speed
