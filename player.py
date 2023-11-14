@@ -19,6 +19,18 @@ def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 
+# Player Run Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 1.0
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 6
+
+
 class Idle:
 
     @staticmethod
@@ -37,22 +49,23 @@ class Idle:
 
     @staticmethod
     def do(player):
-        player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.frame = (player.frame + 6 * ACTION_PER_TIME * game_framework.frame_time) % 6
 
     @staticmethod
     def draw(player):
-        player.image.clip_draw(int(player.frame) * 100, player.action * 100, 100, 100, player.x, player.y)
-
+        player.image.clip_composite_draw(int(player.frame) * (player.image.w // FRAMES_PER_ACTION), 0,
+                                         player.image.w // FRAMES_PER_ACTION, player.image.h,
+                                         0, '', player.x, player.y, 49 * 3, 60 * 3)
 
 
 class Run:
 
     @staticmethod
     def enter(player, e):
-        if right_down(e) or left_up(e): # 오른쪽으로 RUN
-            player.dir, player.action, player.face_dir = 1, 1, 1
-        elif left_down(e) or right_up(e): # 왼쪽으로 RUN
-            player.dir, player.action, player.face_dir = -1, 0, -1
+        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
+            player.dir = 1
+        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
+            player.dir = -1
 
     @staticmethod
     def exit(player, e):
@@ -61,22 +74,25 @@ class Run:
 
     @staticmethod
     def do(player):
-        # player.frame = (player.frame + 1) % 8
         player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
-        player.x = clamp(25, player.x, 1600-25)
-        player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-
+        player.x = clamp(50, player.x, game_framework.screen_width - 50)
+        player.frame = (player.frame + 8 * ACTION_PER_TIME * game_framework.frame_time) % 8
 
     @staticmethod
     def draw(player):
-        player.image.clip_draw(int(player.frame) * 100, player.action * 100, 100, 100, player.x, player.y)
+        player.image_run.clip_composite_draw(int(player.frame) * (player.image_run.w // 8), 0,
+                                         player.image_run.w // 8, player.image_run.h,
+                                         0, '', player.x, player.y, (player.image_run.w // 8) * 3, player.image_run.h * 3)
 
 
 class StateMachine:
     def __init__(self, player):
         self.player = player
-        self.cur_state
-        self.transitions = {}
+        self.cur_state = Idle
+        self.transitions = {
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
+        }
 
     def start(self):
         self.cur_state.enter(self.player, ('NONE', 0))
@@ -99,9 +115,6 @@ class StateMachine:
 
 
 # Player Action Speed
-TIME_PER_ACTION = 1.0
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 6
 
 
 class Player:
@@ -112,17 +125,16 @@ class Player:
         self.face_dir = 1
         self.dir = 0
         self.image = load_image('resource/image/player_idle.png')
+        self.image_run = load_image('resource/image/player_run.png')
+        self.state_machine = StateMachine(self)
+        self.state_machine.start()
 
     def update(self):
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        self.state_machine.update()
         pass
 
     def draw(self):
-        if self.face_dir == -1:
-            self.image.clip_composite_draw(int(self.frame) * (self.image.w // FRAMES_PER_ACTION), 0,
-                                           self.image.w // FRAMES_PER_ACTION, self.image.h,
-                                           0, 'h', self.x, self.y, 49 * 3, 53 * 3)
-        else:
-            self.image.clip_composite_draw(int(self.frame) * (self.image.w // FRAMES_PER_ACTION), 0,
-                                           self.image.w // FRAMES_PER_ACTION, self.image.h,
-                                           0, '', self.x, self.y, 49 * 3, 53 * 3)
+        self.state_machine.draw()
+
+    def handle_event(self, event):
+        self.state_machine.handle_event(('INPUT', event))
