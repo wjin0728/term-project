@@ -19,6 +19,10 @@ def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 
+def space_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
+
+
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 20.0  # Km / Hour
@@ -85,13 +89,41 @@ class Run:
                                          0, '', player.x, player.y, (player.image_run.w // 8) * 3, player.image_run.h * 3)
 
 
+class Jump:
+
+    @staticmethod
+    def enter(player, e):
+        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
+            player.dir = 1
+        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
+            player.dir = -1
+
+    @staticmethod
+    def exit(player, e):
+
+        pass
+
+    @staticmethod
+    def do(player):
+        player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
+        player.x = clamp(50, player.x, game_framework.screen_width - 50)
+        player.frame = (player.frame + 9 * ACTION_PER_TIME * game_framework.frame_time) % 9
+
+    @staticmethod
+    def draw(player):
+        player.image_jump.clip_composite_draw(int(player.frame) * (player.image_jump.w // 9), 0,
+                                         player.image_jump.w // 9, player.image_jump.h,
+                                         0, '', player.x, player.y, (player.image_jump.w // 9) * 3, player.image_jump.h * 3)
+
+
 class StateMachine:
     def __init__(self, player):
         self.player = player
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
+            Jump: {}
         }
 
     def start(self):
@@ -126,6 +158,7 @@ class Player:
         self.dir = 0
         self.image = load_image('resource/image/player_idle.png')
         self.image_run = load_image('resource/image/player_run.png')
+        self.image_jump = load_image('resource/image/player_jump.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
