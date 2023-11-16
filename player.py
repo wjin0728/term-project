@@ -23,6 +23,10 @@ def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
 
+def landing(e):
+    return e[0] == 'LANDING'
+
+
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 20.0  # Km / Hour
@@ -52,6 +56,10 @@ class Idle:
         pass
 
     @staticmethod
+    def handle_event(player, e):
+        pass
+
+    @staticmethod
     def do(player):
         player.frame = (player.frame + 6 * ACTION_PER_TIME * game_framework.frame_time) % 6
 
@@ -77,6 +85,10 @@ class Run:
         pass
 
     @staticmethod
+    def handle_event(player, e):
+        pass
+
+    @staticmethod
     def do(player):
         player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
         player.x = clamp(50, player.x, game_framework.screen_width - 50)
@@ -93,21 +105,36 @@ class Jump:
 
     @staticmethod
     def enter(player, e):
-        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
-            player.dir = 1
-        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
-            player.dir = -1
+        player.velocity = 7
+        pass
 
     @staticmethod
     def exit(player, e):
-
+        player.y = 350
         pass
+
+    @staticmethod
+    def handle_event(player, e):
+        if right_down(e) and player.dir == 0:  # 오른쪽으로 RUN
+            player.dir = 1
+        elif (right_up(e) and player.dir == 1) or (left_up(e) and player.dir == -1):
+            player.dir = 0
+        elif (right_down(e) and player.dir == -1) or (left_down(e) and player.dir == 1):
+            player.dir = 0
+        elif left_down(e) and player.dir == 0:  # 왼쪽으로 RUN
+            player.dir = -1
 
     @staticmethod
     def do(player):
         player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
         player.x = clamp(50, player.x, game_framework.screen_width - 50)
         player.frame = (player.frame + 9 * ACTION_PER_TIME * game_framework.frame_time) % 9
+        if player.y + player.velocity >= 350:
+            player.y += player.velocity
+            player.velocity += player.gravity
+        else:
+            if player.dir == 1:
+                player.state_machine.handle_event(('INPUT', 0))
 
     @staticmethod
     def draw(player):
@@ -123,7 +150,7 @@ class StateMachine:
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
-            Jump: {}
+            Jump: {landing: Run}
         }
 
     def start(self):
@@ -139,7 +166,7 @@ class StateMachine:
                 self.cur_state = next_state
                 self.cur_state.enter(self.player, e)
                 return True
-
+        self.cur_state.handle_event(self.player, e)
         return False
 
     def draw(self):
@@ -156,6 +183,8 @@ class Player:
         self.action = 3
         self.face_dir = 1
         self.dir = 0
+        self.gravity = -0.07
+        self.velocity = 0
         self.image = load_image('resource/image/player_idle.png')
         self.image_run = load_image('resource/image/player_run.png')
         self.image_jump = load_image('resource/image/player_jump.png')
