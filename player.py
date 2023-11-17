@@ -133,8 +133,7 @@ class Jump:
             player.y += player.velocity
             player.velocity += player.gravity
         else:
-            if player.dir == 1:
-                player.state_machine.handle_event(('INPUT', 0))
+            player.state_machine.handle_event(('INPUT', 0))
 
     @staticmethod
     def draw(player):
@@ -150,7 +149,7 @@ class StateMachine:
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
-            Jump: {landing: Run}
+            Jump: {landing: Idle}
         }
 
     def start(self):
