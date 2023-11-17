@@ -43,6 +43,8 @@ class Idle:
 
     @staticmethod
     def enter(player, e):
+        player.colWidth = 30
+        player.colHeight = 50
         if player.face_dir == -1:
             player.action = 2
         elif player.face_dir == 1:
@@ -74,6 +76,8 @@ class Run:
 
     @staticmethod
     def enter(player, e):
+        player.colWidth = 30
+        player.colHeight = 50
         if right_down(e) or left_up(e):  # 오른쪽으로 RUN
             player.dir = 1
         elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
@@ -105,6 +109,8 @@ class Jump:
 
     @staticmethod
     def enter(player, e):
+        player.colWidth = 30
+        player.colHeight = 30
         player.velocity = 7
         player.frame = 0
         pass
@@ -196,6 +202,8 @@ class Player:
         self.dir = 0
         self.gravity = -0.07
         self.velocity = 0
+        self.colWidth = 0
+        self.colHeight = 0
         self.image = load_image('resource/image/player_idle.png')
         self.image_run = load_image('resource/image/player_run.png')
         self.image_jump = load_image('resource/image/player_jump.png')
@@ -208,6 +216,14 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
+
+    def get_bb(self):
+        return self.x - self.colWidth, self.y - self.colHeight, self.x + self.colWidth, self.y + self.colHeight
+
+    def handle_collision(self, group, other):
+        if group == 'boy:ball':
+            self.ball_count += 1
