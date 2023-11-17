@@ -106,6 +106,7 @@ class Jump:
     @staticmethod
     def enter(player, e):
         player.velocity = 7
+        player.frame = 0
         pass
 
     @staticmethod
@@ -123,6 +124,10 @@ class Jump:
             player.dir = 0
         elif left_down(e) and player.dir == 0:  # 왼쪽으로 RUN
             player.dir = -1
+        elif right_up(e) and player.dir == 0:
+            player.dir = -1
+        elif left_up(e) and player.dir == 0:
+            player.dir = 1
 
     @staticmethod
     def do(player):
@@ -133,7 +138,14 @@ class Jump:
             player.y += player.velocity
             player.velocity += player.gravity
         else:
-            player.state_machine.handle_event(('INPUT', 0))
+            player.y = 350
+            if player.dir != 0:
+                player.state_machine.cur_state = Run
+            else:
+                player.dir = 0
+                player.frame = 0
+                player.state_machine.cur_state = Idle
+            return
 
     @staticmethod
     def draw(player):
@@ -149,7 +161,7 @@ class StateMachine:
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
-            Jump: {landing: Idle}
+            Jump: {}
         }
 
     def start(self):
