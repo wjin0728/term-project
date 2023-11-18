@@ -44,7 +44,7 @@ class Idle:
     @staticmethod
     def enter(player, e):
         player.colWidth = 30
-        player.colHeight = 50
+        player.colHeight = 60
         if player.face_dir == -1:
             player.action = 2
         elif player.face_dir == 1:
@@ -77,7 +77,7 @@ class Run:
     @staticmethod
     def enter(player, e):
         player.colWidth = 30
-        player.colHeight = 50
+        player.colHeight = 60
         if right_down(e) or left_up(e):  # 오른쪽으로 RUN
             player.dir = 1
         elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
@@ -109,8 +109,8 @@ class Jump:
 
     @staticmethod
     def enter(player, e):
-        player.colWidth = 30
-        player.colHeight = 30
+        player.colWidth = 35
+        player.colHeight = 35
         player.velocity = 7
         player.frame = 0
         pass
@@ -145,6 +145,8 @@ class Jump:
             player.velocity += player.gravity
         else:
             player.y = 350
+            player.colWidth = 30
+            player.colHeight = 60
             if player.dir != 0:
                 player.state_machine.cur_state = Run
             else:
