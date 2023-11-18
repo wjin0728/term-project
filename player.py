@@ -101,8 +101,9 @@ class Run:
     @staticmethod
     def draw(player):
         player.image_run.clip_composite_draw(int(player.frame) * (player.image_run.w // 8), 0,
-                                         player.image_run.w // 8, player.image_run.h,
-                                         0, '', player.x, player.y, (player.image_run.w // 8) * 3, player.image_run.h * 3)
+                                             player.image_run.w // 8, player.image_run.h,
+                                             0, '', player.x, player.y, (player.image_run.w // 8) * 3,
+                                             player.image_run.h * 3)
 
 
 class Jump:
@@ -158,8 +159,43 @@ class Jump:
     @staticmethod
     def draw(player):
         player.image_jump.clip_composite_draw(int(player.frame) * (player.image_jump.w // 9), 0,
-                                         player.image_jump.w // 9, player.image_jump.h,
-                                         0, '', player.x, player.y, (player.image_jump.w // 9) * 3, player.image_jump.h * 3)
+                                              player.image_jump.w // 9, player.image_jump.h,
+                                              0, '', player.x, player.y, (player.image_jump.w // 9) * 3,
+                                              player.image_jump.h * 3)
+
+
+class Attack:
+
+    @staticmethod
+    def enter(player, e):
+        player.colWidth = 30
+        player.colHeight = 60
+        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
+            player.dir = 1
+        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
+            player.dir = -1
+
+    @staticmethod
+    def exit(player, e):
+
+        pass
+
+    @staticmethod
+    def handle_event(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
+        player.x = clamp(50, player.x, game_framework.screen_width - 50)
+        player.frame = (player.frame + 8 * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+    @staticmethod
+    def draw(player):
+        player.image_run.clip_composite_draw(int(player.frame) * (player.image_run.w // 8), 0,
+                                             player.image_run.w // 8, player.image_run.h,
+                                             0, '', player.x, player.y, (player.image_run.w // 8) * 3,
+                                             player.image_run.h * 3)
 
 
 class StateMachine:
