@@ -27,6 +27,10 @@ def landing(e):
     return e[0] == 'LANDING'
 
 
+def F_KEY_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_f
+
+
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 20.0  # Km / Hour
@@ -170,10 +174,7 @@ class Attack:
     def enter(player, e):
         player.colWidth = 30
         player.colHeight = 60
-        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
-            player.dir = 1
-        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
-            player.dir = -1
+        player.frame = 0
 
     @staticmethod
     def exit(player, e):
@@ -182,20 +183,37 @@ class Attack:
 
     @staticmethod
     def handle_event(player, e):
-        pass
+        if right_down(e) and player.dir == 0:  # 오른쪽으로 RUN
+            player.dir = 1
+        elif (right_up(e) and player.dir == 1) or (left_up(e) and player.dir == -1):
+            player.dir = 0
+        elif (right_down(e) and player.dir == -1) or (left_down(e) and player.dir == 1):
+            player.dir = 0
+        elif left_down(e) and player.dir == 0:  # 왼쪽으로 RUN
+            player.dir = -1
+        elif right_up(e) and player.dir == 0:
+            player.dir = -1
+        elif left_up(e) and player.dir == 0:
+            player.dir = 1
 
     @staticmethod
     def do(player):
-        player.x += player.dir * RUN_SPEED_PPS * game_framework.frame_time
-        player.x = clamp(50, player.x, game_framework.screen_width - 50)
-        player.frame = (player.frame + 8 * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.frame = (player.frame + 5 * ACTION_PER_TIME * game_framework.frame_time) % 5
+        if int(player.frame) == 4:
+            if player.dir != 0:
+                player.state_machine.cur_state = Run
+            else:
+                player.dir = 0
+                player.frame = 0
+                player.state_machine.cur_state = Idle
+            return
 
     @staticmethod
     def draw(player):
-        player.image_run.clip_composite_draw(int(player.frame) * (player.image_run.w // 8), 0,
-                                             player.image_run.w // 8, player.image_run.h,
-                                             0, '', player.x, player.y, (player.image_run.w // 8) * 3,
-                                             player.image_run.h * 3)
+        player.image_attack.clip_composite_draw(int(player.frame) * (player.image_attack.w // 5), 0,
+                                             player.image_attack.w // 5, player.image_attack.h,
+                                             0, '', player.x, player.y, (player.image_attack.w // 5) * 3,
+                                             player.image_attack.h * 3)
 
 
 class StateMachine:
@@ -203,9 +221,10 @@ class StateMachine:
         self.player = player
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
-            Jump: {}
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump, F_KEY_down: Attack},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump, F_KEY_down: Attack},
+            Jump: {},
+            Attack: {}
         }
 
     def start(self):
@@ -245,6 +264,7 @@ class Player:
         self.image = load_image('resource/image/player_idle.png')
         self.image_run = load_image('resource/image/player_run.png')
         self.image_jump = load_image('resource/image/player_jump.png')
+        self.image_attack = load_image('resource/image/player_attack.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
@@ -263,5 +283,4 @@ class Player:
         return self.x - self.colWidth, self.y - self.colHeight, self.x + self.colWidth, self.y + self.colHeight
 
     def handle_collision(self, group, other):
-        if group == 'boy:ball':
-            self.ball_count += 1
+        pass
