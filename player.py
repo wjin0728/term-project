@@ -38,7 +38,7 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-TIME_PER_ACTION = 1.0
+TIME_PER_ACTION = 0.7
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 6
 
@@ -73,7 +73,8 @@ class Idle:
     def draw(player):
         player.image.clip_composite_draw(int(player.frame) * (player.image.w // FRAMES_PER_ACTION), 0,
                                          player.image.w // FRAMES_PER_ACTION, player.image.h,
-                                         0, '', player.x, player.y, 49 * 3, 60 * 3)
+                                         0, '', player.x, player.y, (player.image.w // 6) * 3,
+                                         player.image.h * 3)
 
 
 class Run:
@@ -211,9 +212,9 @@ class Attack:
     @staticmethod
     def draw(player):
         player.image_attack.clip_composite_draw(int(player.frame) * (player.image_attack.w // 5), 0,
-                                             player.image_attack.w // 5, player.image_attack.h,
-                                             0, '', player.x, player.y, (player.image_attack.w // 5) * 3,
-                                             player.image_attack.h * 3)
+                                                player.image_attack.w // 5, player.image_attack.h,
+                                                0, '', player.x, player.y, (player.image_attack.w // 5) * 3,
+                                                player.image_attack.h * 3)
 
 
 class StateMachine:
@@ -222,7 +223,8 @@ class StateMachine:
         self.cur_state = Idle
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump, F_KEY_down: Attack},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump, F_KEY_down: Attack},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump,
+                  F_KEY_down: Attack},
             Jump: {},
             Attack: {}
         }
