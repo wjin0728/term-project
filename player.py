@@ -199,8 +199,7 @@ class Attack:
 
     @staticmethod
     def do(player):
-        player.frame = (player.frame + 5 * ACTION_PER_TIME * game_framework.frame_time) % 5
-        if int(player.frame) == 4:
+        if player.frame >= 4.5:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
             else:
@@ -208,6 +207,8 @@ class Attack:
                 player.frame = 0
                 player.state_machine.cur_state = Idle
             return
+        player.frame = (player.frame + 5 * ACTION_PER_TIME * game_framework.frame_time) % 5
+
 
     @staticmethod
     def draw(player):
