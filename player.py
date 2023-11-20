@@ -73,7 +73,7 @@ class Idle:
     def draw(player):
         player.image.clip_composite_draw(int(player.frame) * (player.image.w // FRAMES_PER_ACTION), 0,
                                          player.image.w // FRAMES_PER_ACTION, player.image.h,
-                                         0, '', player.x, player.y, (player.image.w // 6) * 3,
+                                         0, player.face_dir, player.x, player.y, (player.image.w // 6) * 3,
                                          player.image.h * 3)
 
 
@@ -84,9 +84,9 @@ class Run:
         player.colWidth = 30
         player.colHeight = 60
         if right_down(e) or left_up(e):  # 오른쪽으로 RUN
-            player.dir = 1
+            player.dir, player.face_dir = 1, ''
         elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
-            player.dir = -1
+            player.dir, player.face_dir = -1, 'h'
 
     @staticmethod
     def exit(player, e):
@@ -107,7 +107,7 @@ class Run:
     def draw(player):
         player.image_run.clip_composite_draw(int(player.frame) * (player.image_run.w // 8), 0,
                                              player.image_run.w // 8, player.image_run.h,
-                                             0, '', player.x, player.y, (player.image_run.w // 8) * 3,
+                                             0, player.face_dir, player.x, player.y, (player.image_run.w // 8) * 3,
                                              player.image_run.h * 3)
 
 
@@ -129,17 +129,17 @@ class Jump:
     @staticmethod
     def handle_event(player, e):
         if right_down(e) and player.dir == 0:  # 오른쪽으로 RUN
-            player.dir = 1
+            player.dir, player.face_dir = 1, ''
         elif (right_up(e) and player.dir == 1) or (left_up(e) and player.dir == -1):
             player.dir = 0
         elif (right_down(e) and player.dir == -1) or (left_down(e) and player.dir == 1):
             player.dir = 0
         elif left_down(e) and player.dir == 0:  # 왼쪽으로 RUN
-            player.dir = -1
+            player.dir, player.face_dir = -1, 'h'
         elif right_up(e) and player.dir == 0:
-            player.dir = -1
+            player.dir, player.face_dir = -1, 'h'
         elif left_up(e) and player.dir == 0:
-            player.dir = 1
+            player.dir, player.face_dir = 1, ''
 
     @staticmethod
     def do(player):
@@ -165,7 +165,7 @@ class Jump:
     def draw(player):
         player.image_jump.clip_composite_draw(int(player.frame) * (player.image_jump.w // 9), 0,
                                               player.image_jump.w // 9, player.image_jump.h,
-                                              0, '', player.x, player.y, (player.image_jump.w // 9) * 3,
+                                              0, player.face_dir, player.x, player.y, (player.image_jump.w // 9) * 3,
                                               player.image_jump.h * 3)
 
 
@@ -207,14 +207,14 @@ class Attack:
                 player.frame = 0
                 player.state_machine.cur_state = Idle
             return
-        player.frame = (player.frame + 5 * ACTION_PER_TIME * game_framework.frame_time) % 5
+        player.frame = (player.frame + 5 * (1.0/0.3) * game_framework.frame_time) % 5
 
 
     @staticmethod
     def draw(player):
         player.image_attack.clip_composite_draw(int(player.frame) * (player.image_attack.w // 5), 0,
                                                 player.image_attack.w // 5, player.image_attack.h,
-                                                0, '', player.x, player.y, (player.image_attack.w // 5) * 3,
+                                                0, player.face_dir, player.x, player.y, (player.image_attack.w // 5) * 3,
                                                 player.image_attack.h * 3)
 
 
@@ -258,7 +258,7 @@ class Player:
         self.x, self.y = 50, 350
         self.frame = 0
         self.action = 3
-        self.face_dir = 1
+        self.face_dir = ''
         self.dir = 0
         self.gravity = -0.07
         self.velocity = 0
