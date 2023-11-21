@@ -170,7 +170,6 @@ class Jump:
 
 
 class Attack:
-
     @staticmethod
     def enter(player, e):
         player.colWidth = 30
@@ -219,16 +218,27 @@ class Attack:
 
 
 class StateMachine:
-    def __init__(self, player):
+    def __init__(self, player, side):
         self.player = player
         self.cur_state = Idle
-        self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump, F_KEY_down: Attack},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump,
-                  F_KEY_down: Attack},
-            Jump: {},
-            Attack: {}
-        }
+        self.transitions = None
+        if side == 1:
+            self.transitions = {
+                Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump, F_KEY_down: Attack},
+                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump,
+                      F_KEY_down: Attack},
+                Jump: {},
+                Attack: {}
+            }
+        else:
+            self.transitions = {
+                Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump,
+                       F_KEY_down: Attack},
+                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump,
+                      F_KEY_down: Attack},
+                Jump: {},
+                Attack: {}
+            }
 
     def start(self):
         self.cur_state.enter(self.player, ('NONE', 0))
@@ -268,7 +278,7 @@ class Player:
         self.image_run = load_image('resource/image/player_run.png')
         self.image_jump = load_image('resource/image/player_jump.png')
         self.image_attack = load_image('resource/image/player_attack.png')
-        self.state_machine = StateMachine(self)
+        self.state_machine = StateMachine(self, 1)
         self.state_machine.start()
 
     def update(self):
