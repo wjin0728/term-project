@@ -3,28 +3,28 @@ import game_framework
 from pico2d import *
 
 
-def space_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
-
-
-def D_key_down(e):
+def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 
 
-def D_key_up(e):
+def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
 
 
-def A_key_down(e):
+def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 
 
-def A_key_up(e):
+def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 
-def F_KEY_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_f
+def PERIOD_key_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_PERIOD
+
+
+def COMMA_key_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_COMMA
 
 
 # Player Run Speed
@@ -79,9 +79,9 @@ class Run:
     def enter(player, e):
         player.colWidth = 30
         player.colHeight = 60
-        if D_key_down(e) or A_key_up(e):  # 오른쪽으로 RUN
+        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
             player.dir, player.face_dir = 1, ''
-        elif A_key_down(e) or D_key_up(e):  # 왼쪽으로 RUN
+        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
             player.dir, player.face_dir = -1, 'h'
 
     @staticmethod
@@ -124,17 +124,17 @@ class Jump:
 
     @staticmethod
     def handle_event(player, e):
-        if D_key_down(e) and player.dir == 0:  # 오른쪽으로 RUN
+        if right_down(e) and player.dir == 0:  # 오른쪽으로 RUN
             player.dir, player.face_dir = 1, ''
-        elif (D_key_up(e) and player.dir == 1) or (A_key_up(e) and player.dir == -1):
+        elif (right_up(e) and player.dir == 1) or (left_up(e) and player.dir == -1):
             player.dir = 0
-        elif (D_key_down(e) and player.dir == -1) or (A_key_down(e) and player.dir == 1):
+        elif (right_down(e) and player.dir == -1) or (left_down(e) and player.dir == 1):
             player.dir = 0
-        elif A_key_down(e) and player.dir == 0:  # 왼쪽으로 RUN
+        elif left_down(e) and player.dir == 0:  # 왼쪽으로 RUN
             player.dir, player.face_dir = -1, 'h'
-        elif D_key_up(e) and player.dir == 0:
+        elif right_up(e) and player.dir == 0:
             player.dir, player.face_dir = -1, 'h'
-        elif A_key_up(e) and player.dir == 0:
+        elif left_up(e) and player.dir == 0:
             player.dir, player.face_dir = 1, ''
 
     @staticmethod
@@ -179,17 +179,17 @@ class Attack:
 
     @staticmethod
     def handle_event(player, e):
-        if D_key_down(e) and player.dir == 0:  # 오른쪽으로 RUN
+        if right_down(e) and player.dir == 0:  # 오른쪽으로 RUN
             player.dir = 1
-        elif (D_key_up(e) and player.dir == 1) or (A_key_up(e) and player.dir == -1):
+        elif (right_up(e) and player.dir == 1) or (left_up(e) and player.dir == -1):
             player.dir = 0
-        elif (D_key_down(e) and player.dir == -1) or (A_key_down(e) and player.dir == 1):
+        elif (right_down(e) and player.dir == -1) or (left_down(e) and player.dir == 1):
             player.dir = 0
-        elif A_key_down(e) and player.dir == 0:  # 왼쪽으로 RUN
+        elif left_down(e) and player.dir == 0:  # 왼쪽으로 RUN
             player.dir = -1
-        elif D_key_up(e) and player.dir == 0:
+        elif right_up(e) and player.dir == 0:
             player.dir = -1
-        elif A_key_up(e) and player.dir == 0:
+        elif left_up(e) and player.dir == 0:
             player.dir = 1
 
     @staticmethod
@@ -218,10 +218,10 @@ class StateMachine:
         self.cur_state = Idle
         self.transitions = None
         self.transitions = {
-            Idle: {D_key_down: Run, A_key_down: Run, A_key_up: Run, D_key_up: Run, space_down: Jump,
-                   F_KEY_down: Attack},
-            Run: {D_key_down: Idle, A_key_down: Idle, D_key_up: Idle, A_key_up: Idle, space_down: Jump,
-                  F_KEY_down: Attack},
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, COMMA_key_down: Jump,
+                   PERIOD_key_down: Attack},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, COMMA_key_down: Jump,
+                  PERIOD_key_down: Attack},
             Jump: {},
             Attack: {}
         }
@@ -249,21 +249,21 @@ class StateMachine:
 # Player Action Speed
 
 
-class Player:
+class Player2:
     def __init__(self):
-        self.x, self.y = 100, 350
+        self.x, self.y = 1400, 350
         self.frame = 0
         self.action = 3
-        self.face_dir = ''
+        self.face_dir = 'h'
         self.dir = 0
         self.gravity = -0.07
         self.velocity = 0
         self.colWidth = 0
         self.colHeight = 0
-        self.image = load_image('resource/image/player1_idle.png')
-        self.image_run = load_image('resource/image/player1_run.png')
-        self.image_jump = load_image('resource/image/player1_jump.png')
-        self.image_attack = load_image('resource/image/player1_attack.png')
+        self.image = load_image('resource/image/player2_idle.png')
+        self.image_run = load_image('resource/image/player2_run.png')
+        self.image_jump = load_image('resource/image/player2_jump.png')
+        self.image_attack = load_image('resource/image/player2_attack.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
