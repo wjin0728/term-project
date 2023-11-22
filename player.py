@@ -264,21 +264,27 @@ class StateMachine:
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, side):
         self.x, self.y = 50, 350
         self.frame = 0
         self.action = 3
         self.face_dir = ''
+        if side == 1:
+            self.x = 100
+            self.face_dir = ''
+        else:
+            self.x = 1400
+            self.face_dir = 'h'
         self.dir = 0
         self.gravity = -0.07
         self.velocity = 0
         self.colWidth = 0
         self.colHeight = 0
-        self.image = load_image('resource/image/player_idle.png')
-        self.image_run = load_image('resource/image/player_run.png')
-        self.image_jump = load_image('resource/image/player_jump.png')
-        self.image_attack = load_image('resource/image/player_attack.png')
-        self.state_machine = StateMachine(self, 1)
+        self.image = load_image('resource/image/player' + side + '_idle.png')
+        self.image_run = load_image('resource/image/player' + side + '_run.png')
+        self.image_jump = load_image('resource/image/player' + side + '_jump.png')
+        self.image_attack = load_image('resource/image/player' + side + '_attack.png')
+        self.state_machine = StateMachine(self, side)
         self.state_machine.start()
 
     def update(self):
