@@ -7,7 +7,7 @@ import random
 from background import Background
 from ground import Ground
 from player import Player
-
+from player2 import Player2
 
 def handle_events():
     events = get_events()
