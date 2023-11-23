@@ -194,7 +194,7 @@ class Attack:
 
     @staticmethod
     def do(player):
-        if player.frame >= 4.5:
+        if player.frame >= 4.8:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
             else:
@@ -260,6 +260,7 @@ class Player:
         self.velocity = 0
         self.colWidth = 0
         self.colHeight = 0
+        self.hp = 5
         self.image = load_image('resource/image/player1_idle.png')
         self.image_run = load_image('resource/image/player1_run.png')
         self.image_jump = load_image('resource/image/player1_jump.png')
