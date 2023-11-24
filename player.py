@@ -1,7 +1,7 @@
 import game_world
 import game_framework
 from pico2d import *
-
+import server
 
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -192,8 +192,10 @@ class Attack:
         elif A_key_up(e) and player.dir == 0:
             player.dir = 1
 
+
     @staticmethod
     def do(player):
+        from Player2 import Player2
         if player.frame >= 4.8:
             if player.dir != 0:
                 player.state_machine.cur_state = Run

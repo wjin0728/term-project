@@ -1,6 +1,9 @@
 import game_world
 import game_framework
 from pico2d import *
+import server
+import math
+import numpy
 
 
 def right_down(e):
@@ -194,6 +197,16 @@ class Attack:
 
     @staticmethod
     def do(player):
+        from player import Player
+        if 4 >= int(player.frame) >= 2:
+            v = server.player_one.get_bb()
+            vert = []
+            vert.append(numpy.array([vert[0], vert[3]]))
+            vert.append(numpy.array([vert[0], vert[1]]))
+            vert.append(numpy.array([vert[2], vert[1]]))
+            vert.append(numpy.array([vert[2], vert[3]]))
+            for v in vert:
+                if v.
         if player.frame >= 4.5:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
