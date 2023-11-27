@@ -196,24 +196,30 @@ class Attack:
 
     @staticmethod
     def do(player):
+
         from Player2 import Player2
-        if int(player.frame) == 4:
+        if int(player.frame) == 2:
             if player.face_dir == '':
-                p1 = (player.x, player.y - 60)
+                p1 = (player.x, player.y - 40)
                 p2 = (player.x + 150, player.y + 120)
-                game_world.add_object(Sword(p1, p2), 1)
+                player.sword = Sword(p1, p2)
+                game_world.add_object(player.sword, 1)
             elif player.face_dir == 'h':
-                p1 = (player.x - 150, player.y - 60)
+                p1 = (player.x - 150, player.y - 40)
                 p2 = (player.x, player.y + 120)
-                game_world.add_object(Sword(p1, p2), 1)
+                player.sword = Sword(p1, p2)
+                game_world.add_object(player.sword, 1)
         if player.frame >= 4.8:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
+                game_world.remove_object(player.sword)
+                player.sword = None
             else:
                 player.dir = 0
                 player.frame = 0
                 player.state_machine.cur_state = Idle
-
+                game_world.remove_object(player.sword)
+                player.sword = None
             return
         player.frame = (player.frame + 5 * (1.0/0.3) * game_framework.frame_time) % 5
 
@@ -280,6 +286,7 @@ class Player:
         self.image_attack = load_image('resource/image/player1_attack.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+        self.sword = None
 
     def update(self):
         self.state_machine.update()
