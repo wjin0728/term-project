@@ -4,6 +4,7 @@ from pico2d import *
 import server
 import math
 import numpy
+import Sword
 
 
 def right_down(e):

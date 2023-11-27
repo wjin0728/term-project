@@ -2,6 +2,8 @@ import game_world
 import game_framework
 from pico2d import *
 import server
+from Sword import *
+
 
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -192,10 +194,18 @@ class Attack:
         elif A_key_up(e) and player.dir == 0:
             player.dir = 1
 
-
     @staticmethod
     def do(player):
         from Player2 import Player2
+        if int(player.frame) == 4:
+            if player.face_dir == '':
+                p1 = (player.x, player.y - 60)
+                p2 = (player.x + 150, player.y + 120)
+                game_world.add_object(Sword(p1, p2), 1)
+            elif player.face_dir == 'h':
+                p1 = (player.x - 150, player.y - 60)
+                p2 = (player.x, player.y + 120)
+                game_world.add_object(Sword(p1, p2), 1)
         if player.frame >= 4.8:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
@@ -203,6 +213,7 @@ class Attack:
                 player.dir = 0
                 player.frame = 0
                 player.state_machine.cur_state = Idle
+
             return
         player.frame = (player.frame + 5 * (1.0/0.3) * game_framework.frame_time) % 5
 
