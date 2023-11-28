@@ -210,6 +210,7 @@ class Attack:
                 p2 = (player.x, player.y + 120)
                 player.sword = Sword(p1, p2)
                 game_world.add_object(player.sword, 1)
+            game_world.add_collision_pair("player1 : sword", None, player.sword)
         if player.frame >= 4.8:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
@@ -288,6 +289,7 @@ class Player2:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.sword = None
+        self.invincible = 10
 
     def update(self):
         self.state_machine.update()
@@ -304,4 +306,9 @@ class Player2:
         return self.x - self.colWidth, self.y - self.colHeight, self.x + self.colWidth, self.y + self.colHeight
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'player2 : sword' and not self.invincible:
+            self.invincible = True
+            self.hp -= 1
+            print('플레이어2 칼맞음')
+
+

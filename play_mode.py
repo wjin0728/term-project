@@ -30,6 +30,8 @@ def init():
     game_world.add_object(Ground('1'), 1)
     game_world.add_object(server.player_one, 2)
     game_world.add_object(server.player_two, 2)
+    game_world.add_collision_pair("player1 : sword", server.player_one, None)
+    game_world.add_collision_pair("player2 : sword", server.player_two, None)
     pass
 
 
@@ -40,6 +42,7 @@ def finish():
 
 def update():
     game_world.update()
+    game_world.handle_collisions()
     pass
 
 
