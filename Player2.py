@@ -4,7 +4,7 @@ from pico2d import *
 import server
 import math
 import numpy
-import Sword
+from Sword import *
 
 
 def right_down(e):
@@ -199,15 +199,30 @@ class Attack:
     @staticmethod
     def do(player):
         from player import Player
-        if player.frame >= 4.5:
+        if int(player.frame) == 2 and player.sword is None:
+            if player.face_dir == '':
+                p1 = (player.x, player.y - 40)
+                p2 = (player.x + 150, player.y + 120)
+                player.sword = Sword(p1, p2)
+                game_world.add_object(player.sword, 1)
+            elif player.face_dir == 'h':
+                p1 = (player.x - 150, player.y - 40)
+                p2 = (player.x, player.y + 120)
+                player.sword = Sword(p1, p2)
+                game_world.add_object(player.sword, 1)
+        if player.frame >= 4.8:
             if player.dir != 0:
                 player.state_machine.cur_state = Run
+                game_world.remove_object(player.sword)
+                player.sword = None
             else:
                 player.dir = 0
                 player.frame = 0
                 player.state_machine.cur_state = Idle
+                game_world.remove_object(player.sword)
+                player.sword = None
             return
-        player.frame = (player.frame + 5 * (1.0/0.3) * game_framework.frame_time) % 5
+        player.frame = (player.frame + 5 * (1.0 / 0.3) * game_framework.frame_time) % 5
 
     @staticmethod
     def draw(player):
@@ -272,6 +287,7 @@ class Player2:
         self.image_attack = load_image('resource/image/player2_attack.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+        self.sword = None
 
     def update(self):
         self.state_machine.update()

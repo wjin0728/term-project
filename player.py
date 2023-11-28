@@ -198,7 +198,7 @@ class Attack:
     def do(player):
 
         from Player2 import Player2
-        if int(player.frame) == 2:
+        if int(player.frame) == 2 and player.sword is None:
             if player.face_dir == '':
                 p1 = (player.x, player.y - 40)
                 p2 = (player.x + 150, player.y + 120)
@@ -221,13 +221,14 @@ class Attack:
                 game_world.remove_object(player.sword)
                 player.sword = None
             return
-        player.frame = (player.frame + 5 * (1.0/0.3) * game_framework.frame_time) % 5
+        player.frame = (player.frame + 5 * (1.0 / 0.3) * game_framework.frame_time) % 5
 
     @staticmethod
     def draw(player):
         player.image_attack.clip_composite_draw(int(player.frame) * (player.image_attack.w // 5), 0,
                                                 player.image_attack.w // 5, player.image_attack.h,
-                                                0, player.face_dir, player.x, player.y, (player.image_attack.w // 5) * 3,
+                                                0, player.face_dir, player.x, player.y,
+                                                (player.image_attack.w // 5) * 3,
                                                 player.image_attack.h * 3)
 
 
