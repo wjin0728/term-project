@@ -293,7 +293,8 @@ class Player:
 
     def update(self):
         self.state_machine.update()
-        pass
+        if int(self.invincible) > 0:
+            self.invincible -= game_framework.frame_time
 
     def draw(self):
         self.state_machine.draw()
@@ -306,6 +307,6 @@ class Player:
         return self.x - self.colWidth, self.y - self.colHeight, self.x + self.colWidth, self.y + self.colHeight
 
     def handle_collision(self, group, other):
-        if group == 'player1 : sword' and not self.invincible:
-            self.invincible = True
+        if group == 'player1 : sword' and int(self.invincible) == 0:
+            self.invincible = 5.0
             self.hp -= 1

@@ -289,10 +289,12 @@ class Player2:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.sword = None
-        self.invincible = 10
+        self.invincible = 0
 
     def update(self):
         self.state_machine.update()
+        if int(self.invincible) > 0:
+            self.invincible -= game_framework.frame_time
         pass
 
     def draw(self):
@@ -306,8 +308,8 @@ class Player2:
         return self.x - self.colWidth, self.y - self.colHeight, self.x + self.colWidth, self.y + self.colHeight
 
     def handle_collision(self, group, other):
-        if group == 'player2 : sword' and not self.invincible:
-            self.invincible = True
+        if group == 'player2 : sword' and int(self.invincible) == 0:
+            self.invincible = 5.0
             self.hp -= 1
             print('플레이어2 칼맞음')
 

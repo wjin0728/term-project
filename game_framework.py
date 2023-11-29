@@ -3,8 +3,8 @@ import time
 
 root = tk.Tk()
 
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
+screen_width = 1536
+screen_height = 864
 
 
 def change_mode(mode):
