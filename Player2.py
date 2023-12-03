@@ -175,7 +175,7 @@ class Attack:
         player.colWidth = 30
         player.colHeight = 60
         player.frame = 0
-
+        player.attackSound.play(1)
     @staticmethod
     def exit(player, e):
 
@@ -291,6 +291,10 @@ class Player2:
         self.sword = None
         self.invincible = 0
         self.alpha = 0.0
+        self.attackSound = load_wav('resource/sound/attack.wav')
+        self.hurt = load_wav('resource/sound/hurt.wav')
+        self.attackSound.set_volume(30)
+        self.hurt.set_volume(30)
 
     def update(self):
         self.state_machine.update()
@@ -319,5 +323,6 @@ class Player2:
             self.invincible = 3.0
             self.hp -= 1
             self.alpha = 0.5
+            self.hurt.play(1)
 
 
