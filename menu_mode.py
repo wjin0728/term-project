@@ -4,6 +4,7 @@ import play_mode
 
 menu = None
 font = None
+bSound = None
 
 
 def handle_events():
@@ -20,8 +21,13 @@ def handle_events():
 def init():
     global menu
     global font
+    global bSound
+    bSound = load_music('resource/sound/background.wav')
+    bSound.set_volume(32)
+    bSound.repeat_play()
     menu = load_image('resource/image/menu.png')
     font = load_font('resource/font/main.TTF', 16)
+
 
 
 def finish():

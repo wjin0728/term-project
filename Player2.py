@@ -290,12 +290,19 @@ class Player2:
         self.state_machine.start()
         self.sword = None
         self.invincible = 0
+        self.alpha = 0.0
 
     def update(self):
         self.state_machine.update()
+        self.image.opacify(self.alpha)
+        self.image_attack.opacify(self.alpha)
+        self.image_jump.opacify(self.alpha)
+        self.image_run.opacify(self.alpha)
         if int(self.invincible) > 0:
             self.invincible -= game_framework.frame_time
-        pass
+            self.alpha = math.sin(((5 - self.invincible) / 0.8) * math.pi)
+        if int(self.invincible) == 0:
+            self.alpha = 1
 
     def draw(self):
         self.state_machine.draw()
@@ -309,8 +316,8 @@ class Player2:
 
     def handle_collision(self, group, other):
         if group == 'player2 : sword' and int(self.invincible) == 0:
-            self.invincible = 5.0
+            self.invincible = 3.0
             self.hp -= 1
-            print('플레이어2 칼맞음')
+            self.alpha = 0.5
 
 
