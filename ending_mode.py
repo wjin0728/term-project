@@ -35,11 +35,11 @@ def update():
 def draw():
     clear_canvas()
     if server.who_win == 1:
-        server.p1_win.clip_draw(0, 0, game_framework.screen_width, game_framework.screen_height,
+        server.p1_win.clip_draw(0, 0, server.p1_win.w, server.p1_win.h,
                                 game_framework.screen_width // 2, game_framework.screen_height // 2
                                 )
     elif server.who_win == 2:
-        server.p2_win.clip_draw(0, 0, game_framework.screen_width, game_framework.screen_height,
+        server.p2_win.clip_draw(0, 0, server.p2_win.w, server.p2_win.h,
                                 game_framework.screen_width // 2, game_framework.screen_height // 2
                                 )
     update_canvas()

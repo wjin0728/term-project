@@ -281,7 +281,7 @@ class Player2:
         self.velocity = 0
         self.colWidth = 0
         self.colHeight = 0
-        self.hp = 5
+        self.hp = 3
         self.image = load_image('resource/image/player2_idle.png')
         self.image_run = load_image('resource/image/player2_run.png')
         self.image_jump = load_image('resource/image/player2_jump.png')

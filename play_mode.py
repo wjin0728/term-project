@@ -4,11 +4,14 @@ import menu_mode
 import game_world
 import random
 import server
+import ending_mode
 
 from background import Background
 from ground import Ground
 from player import Player
 from Player2 import Player2
+
+health = None
 
 
 def handle_events():
@@ -21,9 +24,17 @@ def handle_events():
         else:
             server.player_one.handle_event(event)
             server.player_two.handle_event(event)
+    if server.player_one.hp == 0:
+        server.who_win = 1
+        game_framework.change_mode(ending_mode)
+    elif server.player_two.hp == 0:
+        server.who_win = 2
+        game_framework.change_mode(ending_mode)
 
 
 def init():
+    global health
+    health = load_image('resource/image/heart.png')
     server.player_one = Player()
     server.player_two = Player2()
     game_world.add_object(Background('1'))
@@ -48,8 +59,20 @@ def update():
 
 
 def draw():
+    global health
     clear_canvas()
     game_world.render()
+    x = 40
+    for _ in range(server.player_one.hp):
+        health.clip_draw(0, 0, health.w, health.h,
+                         x, 800)
+        x += 100
+
+    x = 1536 - 40
+    for _ in range(server.player_two.hp):
+        health.clip_draw(0, 0, health.w, health.h,
+                         x, 800)
+        x -= 100
     update_canvas()
 
 
