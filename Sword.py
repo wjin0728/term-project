@@ -14,7 +14,7 @@ class Sword:
         pass
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        pass
 
     def handle_event(self, event):
         pass

@@ -37,7 +37,9 @@ def remove_object(o):
 def clear():
     for layer in objects:
         for o in layer:
-            remove_object(o)
+            remove_collision_object(o)
+            del o
+        layer.clear()
 
 
 def collide(a, b):

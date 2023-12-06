@@ -25,10 +25,10 @@ def handle_events():
             server.player_one.handle_event(event)
             server.player_two.handle_event(event)
     if server.player_one.hp == 0:
-        server.who_win = 1
+        server.who_win = 2
         game_framework.change_mode(ending_mode)
     elif server.player_two.hp == 0:
-        server.who_win = 2
+        server.who_win = 1
         game_framework.change_mode(ending_mode)
 
 
@@ -48,8 +48,6 @@ def init():
 
 def finish():
     game_world.clear()
-
-    pass
 
 
 def update():
